@@ -1,0 +1,83 @@
+# projectId: cjcol6bod1cuh0170hkw0xf51
+# version: 228
+
+type Article @model {
+  id: ID! @isUnique
+  authors: [String!]
+  dateDownload: String
+  dateModify: String
+  datePublish: String
+  description: String
+  filename: String
+  imageUrl: String
+  language: String
+  localpath: String
+  title: String
+  titlePage: String
+  titleRss: String
+  sourceDomain: String
+  text: String
+  url: String
+  ancestor: String
+  version: Int
+}
+
+type Config @model {
+  id: ID! @isUnique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  data: Json
+  user: User @relation(name: "AuthorOfConfig")
+}
+
+type Site @model {
+  id: ID! @isUnique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  domain: String!
+}
+
+type Post @model {
+  id: ID! @isUnique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  link: String!
+  location: Location @relation(name: "PostLocation")
+  views: Int! @defaultValue(value: 0)
+  imageUrl: String
+  title: String
+  titlePage: String
+  description: String
+  sourceDomain: String
+  text: String
+  url: String
+}
+
+type Location @model {
+  id: ID! @isUnique
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  post: Post @relation(name: "PostLocation")
+  latitude: Float!
+  longitude: Float!
+}
+
+type File @model {
+  contentType: String!
+  createdAt: DateTime!
+  id: ID! @isUnique
+  name: String!
+  secret: String! @isUnique
+  size: Int!
+  updatedAt: DateTime!
+  url: String! @isUnique
+}
+
+type User @model {
+  createdAt: DateTime!
+  id: ID! @isUnique
+  updatedAt: DateTime!
+  email: String @isUnique
+  password: String
+  configs: [Config!]! @relation(name: "AuthorOfConfig")
+}

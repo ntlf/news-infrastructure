@@ -1,0 +1,71 @@
+version: '2.2'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.2
+    container_name: elasticsearch
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - esdata:/usr/share/elasticsearch/data
+    environment:
+      - bootstrap.memory_lock=true
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    # ports:
+    #   - 9200:9200
+    #   - 9300:9300
+    networks:
+      - elk
+      - traefik_proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.backend=elasticsearch'
+      - 'traefik.frontend.rule=Host:elasticsearch.${DOMAINNAME}'
+      - 'traefik.port=9200'
+      - 'traefik.docker.network=traefik_proxy'
+      - 'traefik.frontend.headers.SSLRedirect=true'
+      - 'traefik.frontend.headers.STSSeconds=315360000'
+      - 'traefik.frontend.headers.browserXSSFilter=true'
+      - 'traefik.frontend.headers.contentTypeNosniff=true'
+      - 'traefik.frontend.headers.forceSTSHeader=true'
+      - 'traefik.frontend.headers.SSLHost=replace_me'
+      - 'traefik.frontend.headers.STSIncludeSubdomains=true'
+      - 'traefik.frontend.headers.STSPreload=true'
+      - 'traefik.frontend.headers.frameDeny=true'
+      - 'traefik.frontend.auth.basic=replace_me'
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.4.2
+    container_name: kibana
+    # ports:
+    #   - 5601:5601
+    networks:
+      - elk
+      - traefik_proxy
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.backend=kibana'
+      - 'traefik.frontend.rule=Host:kibana.${DOMAINNAME}'
+      - 'traefik.port=5601'
+      - 'traefik.docker.network=traefik_proxy'
+      - 'traefik.frontend.headers.SSLRedirect=true'
+      - 'traefik.frontend.headers.STSSeconds=315360000'
+      - 'traefik.frontend.headers.browserXSSFilter=true'
+      - 'traefik.frontend.headers.contentTypeNosniff=true'
+      - 'traefik.frontend.headers.forceSTSHeader=true'
+      - 'traefik.frontend.headers.SSLHost=replace_me'
+      - 'traefik.frontend.headers.STSIncludeSubdomains=true'
+      - 'traefik.frontend.headers.STSPreload=true'
+      - 'traefik.frontend.headers.frameDeny=true'
+      - 'traefik.frontend.auth.basic=replace_me'
+    depends_on:
+      - elasticsearch
+
+volumes:
+  esdata:
+    driver: local
+
+networks:
+  traefik_proxy:
+    external:
+      name: traefik_proxy
+  elk:
+    driver: bridge

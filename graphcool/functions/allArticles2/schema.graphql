@@ -1,0 +1,37 @@
+type ArticlePayload2 {
+  id: ID!
+  authors: [String!]
+  date_download: String
+  date_modify: String
+  date_publish: String
+  description: String
+  filename: String
+  image_url: String
+  language: String
+  localpath: String
+  title: String
+  title_page: String
+  title_rss: String
+  source_domain: String
+  text: String
+  url: String
+  ancestor: String
+  version: Int
+}
+
+extend type Query {
+  allArticles2(
+    first: Int
+    skip: Int
+    text: String
+    disabledSites: [String]
+  ): [ArticlePayload2!]
+}
+
+# type AdditionPayload {
+#   sum: Int!
+# }
+#
+# extend type Mutation {
+#   add(a: Int! b: Int!): AdditionPayload
+#}
